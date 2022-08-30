@@ -4,7 +4,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <rosidl_typesupport_protobuf/message_type_support.hpp>
 
+#include "ros/cppmsg_constructor.hpp"
 class DeserializedGenericSubscription : public rclcpp::SubscriptionBase
 {
 public:
@@ -168,8 +170,13 @@ int main(int argc, char **argv)
   auto node = std::make_shared<rclcpp::Node>("grpc_bridge");
   auto topic_type = "sensor_msgs/msg/LaserScan";
 
-  auto ts_lib = rclcpp::get_typesupport_library(
-      topic_type, "rosidl_typesupport_cpp");
+  auto proto_identifier = "rosidl_typesupport_protobuf_cpp";
+  auto proto_ts_lib = rclcpp::get_typesupport_library(
+      topic_type, proto_identifier);
+  auto proto_ts_handle = rclcpp::get_typesupport_handle(topic_type, proto_identifier, *proto_ts_lib);
+  auto proto_ts_support = static_cast<const rosidl_typesupport_protobuf::message_type_support_t *>(
+      proto_ts_handle->data);
+
   auto sub = create_deserialized_generic_subscription(
       node->get_node_topics_interface(), "/lrf_head_scan",
       topic_type, rclcpp::QoS(10),
@@ -177,7 +184,9 @@ int main(int argc, char **argv)
       {
         (void)message;
         auto test = std::static_pointer_cast<sensor_msgs::msg::LaserScan>(message);
-        std::cout << test->ranges.size() << std::endl;
+        std::string pbout;
+        proto_ts_support->serialize(message.get(), pbout);
+        std::cout << pbout << std::endl;
         // RMW deserialize -> done
         // Protobuf serialize
       });

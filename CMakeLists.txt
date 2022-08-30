@@ -8,6 +8,8 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rosidl_typesupport_introspection_cpp REQUIRED)
+find_package(rosidl_typesupport_protobuf REQUIRED)
 
 add_executable(ros2_grpc_bridge src/ros2_grpc_bridge.cpp)
 target_include_directories(ros2_grpc_bridge PUBLIC
@@ -17,6 +19,8 @@ target_compile_features(ros2_grpc_bridge PUBLIC c_std_99 cxx_std_17)  # Require 
 ament_target_dependencies(
   ros2_grpc_bridge
   "rclcpp"
+  "rosidl_typesupport_introspection_cpp"
+  "rosidl_typesupport_protobuf"
 )
 
 install(TARGETS ros2_grpc_bridge
