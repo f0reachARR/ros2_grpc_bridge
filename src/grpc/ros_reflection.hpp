@@ -13,9 +13,6 @@ class ProtoServerReflection final
 public:
     ProtoServerReflection() : descriptor_pool_(protobuf::DescriptorPool::generated_pool()) {}
 
-    // Add the full names of registered services
-    void SetServiceList(const std::vector<std::string> *services);
-
     // implementation of ServerReflectionInfo(stream ServerReflectionRequest) rpc
     // in ServerReflection service
     grpc::Status ServerReflectionInfo(
@@ -31,6 +28,7 @@ public:
         Status status;
         while (stream->Read(&request))
         {
+            std::cout << request.DebugString() << std::endl;
             switch (request.message_request_case())
             {
             case ServerReflectionRequest::MessageRequestCase::kFileByFilename:
@@ -52,8 +50,8 @@ public:
                     response.mutable_all_extension_numbers_response());
                 break;
             case ServerReflectionRequest::MessageRequestCase::kListServices:
-                // status =
-                //     ListService(context, response.mutable_list_services_response());
+                status =
+                    ListService(context, response.mutable_list_services_response());
                 break;
             default:
                 status = Status(StatusCode::UNIMPLEMENTED, "");
@@ -76,6 +74,8 @@ private:
     grpc::Status ListService(grpc::ServerContext *context,
                              grpc::reflection::v1alpha::ListServiceResponse *response)
     {
+        response->add_service()->set_name("grpc.reflection.v1alpha.ServiceReflection");
+        response->add_service()->set_name("topic.lrf_head_scan");
         return grpc::Status::OK;
     }
 

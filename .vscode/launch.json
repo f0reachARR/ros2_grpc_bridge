@@ -9,16 +9,6 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/ros2_grpc_bridge",
-            "environment": [
-                {
-                    "name": "GRPC_VERBOSITY",
-                    "value": "debug"
-                },
-                {
-                    "name": "GRPC_TRACE",
-                    "value": "api"
-                }
-            ],
             "cwd": "${workspaceFolder}"
         }
     ]
