@@ -48,7 +48,8 @@ ament_target_dependencies(
 target_link_libraries(
   ros2_grpc_bridge
   gRPC::grpc++
-  protobuf::libprotobuf
+  ${PROTOBUF_LIBRARIES}
+  ${Protobuf_PROTOC_LIBRARIES}
 )
 
 install(TARGETS ros2_grpc_bridge
